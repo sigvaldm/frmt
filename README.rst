@@ -43,9 +43,9 @@ Alignment
 
 The ``align`` parameter can be used to change cell alignment:
 
-    * ``'<'`` - Left aligned (default)
-    * ``'^'`` - Centered
-    * ``'>'`` - Right aligned
+* ``'<'`` - Left aligned (default)
+* ``'^'`` - Centered
+* ``'>'`` - Right aligned
 
 It is also possible to have different alignments for different columns by having one character for each column. For instance, to have the first column left aligned and the subsequent four right aligned, set ``align`` to:
 
