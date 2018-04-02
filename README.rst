@@ -1,4 +1,4 @@
-Frmt
+frmt
 ====
 
 Lightweight formatting of tables and times in Python.
@@ -27,7 +27,7 @@ Returns::
     Jane    C     A        A        Quite good
     Trevor  B     D        C        Somewhat average
     
-The signature of ```format_table()``` looks as follows::
+The signature of ``format_table()`` looks as follows::
 
     format_table(table,
                  align='<',
@@ -36,7 +36,7 @@ The signature of ```format_table()``` looks as follows::
                  spacing=2,
                  truncate=0,
                  suffix="..."
-                ):
+                )
     
 Alignment
 ~~~~~~~~~
@@ -140,11 +140,11 @@ For small times (``seconds < 60``), the result is given in 3 significant figures
 
     format_time(10)             returns     "10.0s"
     format_time(1)              returns     "1.00s"
-    format_time(0.01255)        returns     "12.6ms"
+    format_time(0.01255)        returns     "12.6ms"   (with correct round-off)
 
 The finest resolution is 1ns. At last::
 
-    format_time(float('nan'))   returns     "-"
+    format_time(float('nan'))    returns     "-"
 
 ``fit_text()``
 ~~~~~~~~~~~~~~
