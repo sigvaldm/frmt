@@ -1,12 +1,15 @@
-# Frmt
+Frmt
+=======
+
 Lightweight formatting of tables, times, etc. in Python.
 
 The library only has a few simple functions, which will be briefly described here.
 Complete documentation is available in their docstring.
 
-## `format_table()`
+``format_table()``
+----------------
     Formats a table represented as a 2D array of strings into a nice big string
-    suitable for printing. Example:
+    suitable for printing. Example::
 
         table = [[''      ,'Math','English','History', 'Comment'          ],
                  ['Bob'   ,'A'   ,'B'      ,'F'      , 'Failed at history'],
