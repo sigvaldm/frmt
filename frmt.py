@@ -23,9 +23,9 @@ import shutil
 
 def fit_text(text, width=None, suffix="..."):
     """
-    Fits a piece of text to 'width' characters by truncating too long text and
+    Fits a piece of text to ``width`` characters by truncating too long text and
     padding too short text with spaces. Defaults to terminal width. Truncation
-    is indicated by a customizable suffix (default: "...").
+    is indicated by a customizable suffix.
     """
 
     if width==None:
@@ -41,30 +41,17 @@ def fit_text(text, width=None, suffix="..."):
 
 def format_time(seconds):
     """
-    Formats a string from time given in seconds. For large times (seconds >= 60)
-    the format is:
+    Formats a string from time given in seconds. For large times
+    (``seconds >= 60``) the format is::
 
         dd:hh:mm:ss
 
-    where dd, hh, mm and ss refers to days, hours, minutes and seconds,
-    respectively. If the time is less than one day, the first block (dd:) is
-    omitted, and so forth. Examples:
+    For small times (``seconds < 60``), the result is given in 3 significant
+    figures, with units given in seconds and a suitable SI-prefix.
 
-        format_time(24*60*60)       returns     "1:00:00:00"
-        format_time(60*60)          returns     "1:00:00"
-        format_time(60)             returns     "1:00"
+    The finest resolution is 1ns.
 
-    For small times (seconds < 60), the result is given in 3 significant
-    figures, with units given in seconds and a suitable SI-prefix. Examples:
-
-        format_time(10)             returns     "10.0s"
-        format_time(1)              returns     "1.00s"
-        format_time(0.01255)        returns     "12.6ms"
-
-    The finest resolution is 1ns. At last;
-
-        format_time(float('nan'))   returns     "-"
-
+    ``nan`` returns ``-``.
     """
 
     if math.isnan(seconds):
@@ -123,66 +110,43 @@ def format_table(table,
                 ):
     """
     Formats a table represented as a 2D array of strings into a nice big string
-    suitable for printing. Example:
+    suitable for printing.
 
-        table = [[''      ,'Math','English','History', 'Comment'          ],
-                 ['Bob'   ,'A'   ,'B'      ,'F'      , 'Failed at history'],
-                 ['Jane'  ,'C'   ,'A'      ,'A'      , 'Quite good'       ],
-                 ['Trevor','B'   ,'D'      ,'C'      , 'Somewhat average' ]]
+    Parameters:
+    -----------
+    align : string or list of strings
 
-        print(format_table(table))
+            Alignment of cell contents. Each character in a string specifies
+            the alignment of one column.
 
-    Returns:
+            * ``<`` - Left aligned (default)
+            * ``^`` - Centered
+            * ``>`` - Right aligned
 
-                Math  English  History  Comment
-        Bob     A     B        F        Failed at history
-        Jane    C     A        A        Quite good
-        Trevor  B     D        C        Somewhat average
+            The last alignment is repeated for unspecified columns.
 
-    The 'align' parameter can be used to change cell alignment:
+            If it's a list of strings, each string specifies the alignment of
+            one row. The last string is used repeatedly for unspecified rows.
 
-        '<' - Left aligned (default)
-        '^' - Centered
-        '>' - Right aligned
+    colwidth : list of int or None
 
-    It is also possible to have different alignments for different columns by
-    having one character for each column, e.g. to have the first column left
-    aligned and the subsequent four right aligned:
+               The width of each column. The last width is used repeatedly for
+               unspecified columns. If ``None`` the width is fitted to the
+               contents.
 
-        '<>>>>'     or equivalently     '<>'
+    maxwidth : int or None
 
-    If only some columns are specified, the last specified alignment is
-    repeated. It is also possible to have different alignments for differnt rows
-    by having a list of alignment strings for each row. Again, if only the first
-    rows are specified, the last alignment string in the list will apply to all
-    subsequent rows. For instance,
+               The maximum width of the table. Defaults to terminal width minus
+               1 if ``None``. If the table would be wider than ``maxwidth`` one
+               of the columns is truncated.
 
-        print(format_table(table, ['^','<^^^<']))
+    spacing : int
 
-    Returns:
+              The spacing between columns
 
-                Math  English  History       Comment
-        Bob      A       B        F     Failed at history
-        Jane     C       A        A     Quite good
-        Trevor   B       D        C     Somewhat average
+    truncate : int
 
-    On the header row all cells are centered ('^'). On the subsequent rows the
-    leftmost column is left aligned, the three next ones are centered, and the
-    last is also left aligned ('<^^^<').
-
-    The 'colwidth' parameter can be used to change column widths, which by
-    default is just big enough to fit the contents. E.g. setting it to 10 means
-    that all columns are 10 characters wide. Setting it to [20, 10] means that
-    the first column is 20 characters wide and the subsequent ones are 10.
-    Again, the last specified width is repeated for the remaining columns.
-
-    The spacing between the columns is 'spacing' characters (default: 2).
-
-    If the total table width exceeds 'maxwidth' the column indicated by
-    'truncate' (default: 0) is truncated with a suffix 'suffix' (default: "...")
-    on rows that are too long. If 'maxwidth' is not specified it will be taken
-    as the terminal width minus 1. This truncation overrides settings in
-    'colwidth'.
+               Which column to truncate if table width would exceed ``maxwidth``.
 
     Beware that no columns can have zero or negative width. If for instance
     'maxwidth' is 80 and 'colwidth' is [10, 30, 30, 30] with spacing 2 the total

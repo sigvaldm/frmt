@@ -9,6 +9,17 @@ The library only has these functions, which are more thoroughly explained in the
 * ``format_time()``
 * ``fit_text()``
 
+Installation
+------------
+Install from PyPI using ``pip``::
+
+    pip install frmt
+
+Or download the GitHub repository https://github.com/sigvaldm/frmt.git and run::
+
+    python setup.py install
+
+
 ``format_table()``
 ------------------
 ``format_table()`` formats a table represented as a 2D array of strings into a nice big string suitable for printing. Example::

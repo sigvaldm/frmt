@@ -18,13 +18,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with frmt.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from distutils.core import setup
-setup(name='Frmt',
-      version='1.0.0',
-      description='Lightweight formatting of tables, times, etc. in Python',
+from setuptools import setup
+
+with open('README.rst', encoding='utf-8') as f:
+    long_description = f.read()
+
+setup(name='frmt',
+      version='1.0.1',
+      description='Lightweight formatting of tables and times in Python',
+      long_description=long_description,
       author='Sigvald Marholm',
       author_email='marholm@marebakken.com',
-      url='https://github.com/sigvaldm/Frmt.git',
-      py_modules=['frmt']
+      url='https://github.com/sigvaldm/frmt.git',
+      py_modules=['frmt'],
+      license='LGPL'
      )
 
