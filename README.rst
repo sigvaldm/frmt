@@ -134,7 +134,7 @@ Returns::
     John    1:01:12
 
 ``format_time()``
-~~~~~~~~~~~~~~~~~
+-----------------
 Signature: ``format_time(seconds)``
 
 ``format_time()`` represents time given in seconds as a convenient string. For large times (``seconds >= 60``) the output format is::
@@ -158,7 +158,7 @@ The finest resolution is 1ns. At last::
     format_time(float('nan'))    returns     "-"
 
 ``fit_text()``
-~~~~~~~~~~~~~~
+--------------
 Signature: ``fit_text(text, width=None, suffix="...")``
 
 ``fit_text()`` fits a piece of text to ``width`` characters by truncating too long text and padding too short text with spaces. Truncation is indicated by a customizable suffix ``suffix`` (default: ``'...'``). Examples::
