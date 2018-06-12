@@ -58,28 +58,31 @@ def format_time(seconds):
         return "-"
 
     # Small times
-    elif seconds<1:
+    elif abs(seconds)<1:
         milliseconds = 1000*seconds
-        if milliseconds<1:
+        if abs(milliseconds)<1:
             microseconds = 1000*milliseconds
-            if microseconds<1:
+            if abs(microseconds)<1:
                 nanoseconds = 1000*microseconds
-                return "{:.0f}ns".format(nanoseconds)
-            elif microseconds<10:
+                if abs(nanoseconds)<0.5:
+                    return "0"
+                else:
+                    return "{:.0f}ns".format(nanoseconds)
+            elif abs(microseconds)<10:
                 return "{:.2f}us".format(microseconds)
-            elif microseconds<100:
+            elif abs(microseconds)<100:
                 return "{:.1f}us".format(microseconds)
             else:
                 return "{:.0f}us".format(microseconds)
-        elif milliseconds<10:
+        elif abs(milliseconds)<10:
             return "{:.2f}ms".format(milliseconds)
-        elif milliseconds<100:
+        elif abs(milliseconds)<100:
             return "{:.1f}ms".format(milliseconds)
         else:
             return "{:.0f}ms".format(milliseconds)
-    elif seconds<10:
+    elif abs(seconds)<10:
             return "{:.2f}s".format(seconds)
-    elif seconds<60:
+    elif abs(seconds)<60:
             return "{:.1f}s".format(seconds)
 
     # Large times
@@ -87,12 +90,12 @@ def format_time(seconds):
         seconds = int(seconds)
         minutes = int(seconds/60)
         seconds %= 60
-        if minutes<60:
+        if abs(minutes)<60:
             return "{:d}:{:02d}".format(minutes,seconds)
         else:
             hours = int(minutes/60)
             minutes %= 60
-            if hours<24:
+            if abs(hours)<24:
                 return "{:d}:{:02d}:{:02d}".format(hours,minutes,seconds)
             else:
                 days = int(hours/24)
