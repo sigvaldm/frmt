@@ -21,11 +21,16 @@ import math
 import numpy as np
 import shutil
 
-def fit_text(text, width=None, suffix="..."):
+def fit_text(text, width=None, align='<', suffix="..."):
     """
     Fits a piece of text to ``width`` characters by truncating too long text and
     padding too short text with spaces. Defaults to terminal width. Truncation
-    is indicated by a customizable suffix.
+    is indicated by a customizable suffix. ``align`` specifies the alignment of
+    the contents if it is padded, and can be:
+
+    * ``<`` - Left aligned (default)
+    * ``^`` - Centered
+    * ``>`` - Right aligned
     """
 
     if width==None:
@@ -37,71 +42,84 @@ def fit_text(text, width=None, suffix="..."):
         else:
             return text[:width-len(suffix)]+suffix
     else:
-        return "{:{w}}".format(text,w=width)
+        return "{{:{}{{w}}}}".format(align).format(text,w=width)
 
-def format_time(seconds):
+def format_time(seconds, mode='auto'):
     """
     Formats a string from time given in seconds. For large times
-    (``seconds >= 60``) the format is::
+    (``abs(seconds) >= 60``) the format is::
 
         dd:hh:mm:ss
 
-    For small times (``seconds < 60``), the result is given in 3 significant
-    figures, with units given in seconds and a suitable SI-prefix.
+    For small times (``abs(seconds) < 60``), the result is given in 3
+    significant figures, with units given in seconds and a suitable SI-prefix.
+    The format can be locked to either 'small' or 'large' using the 'mode'
+    argument.
 
-    The finest resolution is 1ns.
-
-    ``nan`` returns ``-``.
+    The finest resolution is 1ns and ``nan`` returns ``-``.
     """
+
+    assert mode in ['auto','small','large'],\
+            "mode must be 'auto', 'small' or 'large'"
 
     if math.isnan(seconds):
         return "-"
 
-    # Small times
-    elif abs(seconds)<1:
-        milliseconds = 1000*seconds
-        if abs(milliseconds)<1:
-            microseconds = 1000*milliseconds
-            if abs(microseconds)<1:
-                nanoseconds = 1000*microseconds
-                if abs(nanoseconds)<0.5:
-                    return "0"
-                else:
-                    return "{:.0f}ns".format(nanoseconds)
-            elif abs(microseconds)<10:
-                return "{:.2f}us".format(microseconds)
-            elif abs(microseconds)<100:
-                return "{:.1f}us".format(microseconds)
-            else:
-                return "{:.0f}us".format(microseconds)
-        elif abs(milliseconds)<10:
-            return "{:.2f}ms".format(milliseconds)
-        elif abs(milliseconds)<100:
-            return "{:.1f}ms".format(milliseconds)
+    if mode=='auto':
+        if abs(seconds)<60:
+            mode='small'
         else:
-            return "{:.0f}ms".format(milliseconds)
-    elif abs(seconds)<10:
-            return "{:.2f}s".format(seconds)
-    elif abs(seconds)<60:
-            return "{:.1f}s".format(seconds)
+            mode='large'
 
-    # Large times
-    else:
-        seconds = int(seconds)
-        minutes = int(seconds/60)
-        seconds %= 60
-        if abs(minutes)<60:
-            return "{:d}:{:02d}".format(minutes,seconds)
-        else:
-            hours = int(minutes/60)
-            minutes %= 60
-            if abs(hours)<24:
-                return "{:d}:{:02d}:{:02d}".format(hours,minutes,seconds)
+    if mode=='small':
+        if abs(seconds)<1:
+            milliseconds = 1000*seconds
+            if abs(milliseconds)<1:
+                microseconds = 1000*milliseconds
+                if abs(microseconds)<1:
+                    nanoseconds = 1000*microseconds
+                    if abs(nanoseconds)<0.5:
+                        return "0"
+                    else:
+                        return "{:.0f}ns".format(nanoseconds)
+                elif abs(microseconds)<10:
+                    return "{:.2f}us".format(microseconds)
+                elif abs(microseconds)<100:
+                    return "{:.1f}us".format(microseconds)
+                else:
+                    return "{:.0f}us".format(microseconds)
+            elif abs(milliseconds)<10:
+                return "{:.2f}ms".format(milliseconds)
+            elif abs(milliseconds)<100:
+                return "{:.1f}ms".format(milliseconds)
             else:
-                days = int(hours/24)
-                hours %= 24
-                return "{:d}:{:02d}:{:02d}:{:02d}".format(
-                    days,hours,minutes,seconds)
+                return "{:.0f}ms".format(milliseconds)
+        elif abs(seconds)<10:
+                return "{:.2f}s".format(seconds)
+        elif abs(seconds)<60:
+            return "{:.1f}s".format(seconds)
+        else:
+            return "{:.0f}s".format(seconds)
+
+    else:
+        seconds = round(seconds)
+        if abs(seconds)<60:
+            return "{:d}".format(seconds)
+        else:
+            minutes = int(seconds/60)
+            seconds %= 60
+            if abs(minutes)<60:
+                return "{:d}:{:02d}".format(minutes,seconds)
+            else:
+                hours = int(minutes/60)
+                minutes %= 60
+                if abs(hours)<24:
+                    return "{:d}:{:02d}:{:02d}".format(hours,minutes,seconds)
+                else:
+                    days = int(hours/24)
+                    hours %= 24
+                    return "{:d}:{:02d}:{:02d}:{:02d}".format(
+                        days,hours,minutes,seconds)
 
 def format_table(table,
                  align='<',
@@ -194,7 +212,7 @@ def format_table(table,
             a = colalign[min(j,len(colalign)-1)]
             w = colwidth[j]
             if j!=0: s+= ' '*spacing
-            s += fit_text('{{:{}{{w}}}}'.format(a).format(col,w=w),w,suffix)
+            s += fit_text(str(col), w, a, suffix)
         s += "\n"
 
     return s

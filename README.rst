@@ -11,7 +11,7 @@ The library only has these functions, which are more thoroughly explained in the
 
 Installation
 ------------
-Install from PyPI using ``pip``::
+Install from PyPI using ``pip`` (preferred method)::
 
     pip install frmt
 
@@ -101,7 +101,7 @@ Beware that no columns can have zero or negative width. If for instance ``maxwid
 
 Extended example: Sorting and formatting a table with numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-``format_table()`` deliberately cannot do anything but format arrays of strings. It cannot format the contents of the cells, sort the table, or anything of like that. I advocate composability over extensibility, and these operations are best done separately and then used along with ``format_table()``. It is also not very hard to do separately, as this example demonstrates.
+``format_table()`` deliberately cannot do anything but format arrays of strings. Non string entries are converted using ``str()`` but that's all. It cannot format the contents of the cells, sort the table, or anything of like that. I advocate composability over extensibility, and these operations are best done separately and then used along with ``format_table()``. It is also not very hard to do separately, as this example demonstrates.
 
 Consider printing the race times of a 10km run. The data is already in a table, and we supply a separate header row::
 
@@ -135,9 +135,9 @@ Returns::
 
 ``format_time()``
 -----------------
-Signature: ``format_time(seconds)``
+Signature: ``format_time(seconds, mode='auto')``
 
-``format_time()`` represents time given in seconds as a convenient string. For large times (``seconds >= 60``) the output format is::
+``format_time()`` represents time given in seconds as a convenient string. For large times (``abs(seconds) >= 60``) the output format is::
 
     dd:hh:mm:ss
 
@@ -147,19 +147,21 @@ where ``dd``, ``hh``, ``mm`` and ``ss`` refers to days, hours, minutes and secon
     format_time(60*60)          returns     "1:00:00"
     format_time(60)             returns     "1:00"
 
-For small times (``seconds < 60``), the result is given in 3 significant figures, with units given in seconds and a suitable SI-prefix. Examples::
+For small times (``abs(seconds) < 60``), the result is given in 3 significant figures, with units given in seconds and a suitable SI-prefix. Examples::
 
     format_time(10)             returns     "10.0s"
     format_time(1)              returns     "1.00s"
     format_time(0.01255)        returns     "12.6ms"   (with correct round-off)
 
-The finest resolution is 1ns. At last::
+The finest resolution is 1ns. Finally::
 
     format_time(float('nan'))    returns     "-"
 
+``mode`` can be set equal to either ``'small'`` or ``'large'`` to lock the format to that of small or large times, respectively.
+
 ``fit_text()``
 --------------
-Signature: ``fit_text(text, width=None, suffix="...")``
+Signature: ``fit_text(text, width=None, align='<', suffix="...")``
 
 ``fit_text()`` fits a piece of text to ``width`` characters by truncating too long text and padding too short text with spaces. Truncation is indicated by a customizable suffix ``suffix`` (default: ``'...'``). Examples::
 
@@ -169,3 +171,9 @@ Signature: ``fit_text(text, width=None, suffix="...")``
 If ``width`` is not specified it is taken to be the terminal width. Hence to print a string ``s`` to terminal that truncates rather than spilling across multiple lines if it's too long::
 
     print(fit_text(s))
+
+Content alignment in case of padding can be specified using ``align`` which can take the following values:
+
+    * ``<`` - Left aligned (default)
+    * ``^`` - Centered
+    * ``>`` - Right aligned
