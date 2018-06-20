@@ -60,7 +60,7 @@ The ``align`` parameter can be used to change cell alignment:
 
 It is also possible to have different alignments for different columns by having one character for each column. For instance, to have the first column left aligned and the subsequent four right aligned, set ``align`` to:
 
-    ``'<>>>>'`` or ``'<>'``
+``'<>>>>'`` or ``'<>'``
 
 Note that if only some columns are specified, the last specified alignment is repeated.
 
@@ -174,6 +174,6 @@ If ``width`` is not specified it is taken to be the terminal width. Hence to pri
 
 Content alignment in case of padding can be specified using ``align`` which can take the following values:
 
-    * ``<`` - Left aligned (default)
-    * ``^`` - Centered
-    * ``>`` - Right aligned
+* ``<`` - Left aligned (default)
+* ``^`` - Centered
+* ``>`` - Right aligned
