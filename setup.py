@@ -31,6 +31,7 @@ setup(name='frmt',
       author_email='marholm@marebakken.com',
       url='https://github.com/sigvaldm/frmt.git',
       py_modules=['frmt'],
+      install_requires=['numpy'],
       license='LGPL'
      )
 
