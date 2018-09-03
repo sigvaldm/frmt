@@ -19,6 +19,7 @@ along with frmt.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from setuptools import setup
+from io import open # Necessary for Python 2.7
 
 with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
