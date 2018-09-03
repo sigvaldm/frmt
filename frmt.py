@@ -96,7 +96,7 @@ def format_time(seconds, mode='auto'):
                 return "{:.0f}ms".format(milliseconds)
         elif abs(seconds)<10:
                 return "{:.2f}s".format(seconds)
-        elif abs(seconds)<60:
+        elif abs(seconds)<100:
             return "{:.1f}s".format(seconds)
         else:
             return "{:.0f}s".format(seconds)
