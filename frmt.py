@@ -62,6 +62,9 @@ def format_time(seconds, mode='auto'):
     assert mode in ['auto','small','large'],\
             "mode must be 'auto', 'small' or 'large'"
 
+    if not isinstance(seconds, (int, float)):
+        return str(seconds)
+
     if math.isnan(seconds):
         return "-"
 
