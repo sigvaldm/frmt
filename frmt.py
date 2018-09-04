@@ -185,7 +185,7 @@ def format_table(table,
     if colwidth==None:
         colwidth = list(np.max(np.array([[len(a) for a in b] for b in
                                          table]),0))
-    elif not isinstance(colwidth, (list, np.array)):
+    elif not isinstance(colwidth, (list, np.ndarray)):
         colwidth = [colwidth]
 
     if not isinstance(align, list):
