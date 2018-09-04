@@ -1,4 +1,5 @@
 from frmt import *
+import pytest
 import shutil
 
 def test_fit_text():
@@ -67,3 +68,58 @@ def test_format_time_mode():
 #     assert format_num(1.23456e2)  == '123'
 #     assert format_num(1.23456e3)  == '12.3e3'
 #     assert format_num(1.23456e11)  == '12.3e11'
+
+def test_format_table_example1():
+
+    table = [[''      , 'Math', 'English', 'History', 'Comment'          ],
+             ['Bob'   , 'A'   , 'B'      , 'F'      , 'Failed at history'],
+             ['Jane'  , 'C'   , 'A'      , 'A'      , 'Quite good'       ],
+             ['Trevor', 'B'   , 'D'      , 'C'      , 'Somewhat average' ]]
+
+    assert format_table(table) == \
+        "        Math  English  History  Comment          \n"\
+        "Bob     A     B        F        Failed at history\n"\
+        "Jane    C     A        A        Quite good       \n"\
+        "Trevor  B     D        C        Somewhat average \n"
+
+    assert format_table(table, ['^','<^^^<']) == \
+        "        Math  English  History       Comment     \n"\
+        "Bob      A       B        F     Failed at history\n"\
+        "Jane     C       A        A     Quite good       \n"\
+        "Trevor   B       D        C     Somewhat average \n"
+
+    assert format_table(table, ['^','<^^^<'], maxwidth=47, truncate=4) == \
+        "        Math  English  History      Comment    \n"\
+        "Bob      A       B        F     Failed at hi...\n"\
+        "Jane     C       A        A     Quite good     \n"\
+        "Trevor   B       D        C     Somewhat ave...\n"
+
+    assert format_table(table, colwidth=10) == \
+        "            Math        English     History     Comment   \n"\
+        "Bob         A           B           F           Failed ...\n"\
+        "Jane        C           A           A           Quite good\n"\
+        "Trevor      B           D           C           Somewha...\n"
+
+    with pytest.raises(RuntimeError) as e_info:
+        # Column 0 is 6 characters. Native width is 49. 42 is 7 too narrow.
+        format_table(table, maxwidth=42)
+
+def test_format_table_example2():
+
+    header =  ['Name'  , 'Time']
+    table  = [['John'  , 3672  ],
+              ['Martha', 2879  ],
+              ['Stuart', 2934  ],
+              ['Eduard', 2592  ]]
+
+    table.sort(key=lambda row: row[1])
+    for row in table:
+        row[1] = format_time(row[1])
+    table.insert(0, header)
+
+    assert format_table(table, '<>') == \
+        "Name       Time\n"\
+        "Eduard    43:12\n"\
+        "Martha    47:59\n"\
+        "Stuart    48:54\n"\
+        "John    1:01:12\n"
