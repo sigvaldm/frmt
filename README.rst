@@ -5,7 +5,7 @@ frmt
     :target: https://travis-ci.com/sigvaldm/frmt
 
 .. image:: https://coveralls.io/repos/github/sigvaldm/frmt/badge.svg?branch=master
-:target: https://coveralls.io/github/sigvaldm/frmt?branch=master
+    :target: https://coveralls.io/github/sigvaldm/frmt?branch=master
 
 Lightweight formatting of tables and times in Python.
 
