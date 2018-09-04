@@ -104,7 +104,7 @@ def test_format_table_example1():
         # Column 0 is 6 characters. Native width is 49. 42 is 7 too narrow.
         format_table(table, maxwidth=42)
 
-def test_format_table_example2():
+def test_format_table_example2a():
 
     header =  ['Name'  , 'Time']
     table  = [['John'  , 3672  ],
@@ -123,3 +123,27 @@ def test_format_table_example2():
         "Martha    47:59\n"\
         "Stuart    48:54\n"\
         "John    1:01:12\n"
+
+def test_format_table_example2b():
+
+    header =  ['Name'  , 'Time']
+    table  = [['John'  , 3672  ],
+              ['Martha', 2879  ],
+              ['Stuart', 2934  ],
+              ['Eduard', 2592  ]]
+
+    table.sort(key=lambda row: row[1])
+    table.insert(0, header)
+
+    assert format_table(table, '<>', format=format_time) == \
+        "Name       Time\n"\
+        "Eduard    43:12\n"\
+        "Martha    47:59\n"\
+        "Stuart    48:54\n"\
+        "John    1:01:12\n"
+
+def test_format_table_numcols():
+
+    table = [[1, 2, 3],[1, 2]]
+    with pytest.raises(ValueError) as e_info:
+        format_table(table)

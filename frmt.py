@@ -130,7 +130,8 @@ def format_table(table,
                  maxwidth=None,
                  spacing=2,
                  truncate=0,
-                 suffix="..."
+                 suffix="...",
+                 format=str
                 ):
     """
     Formats a table represented as a 2D array of strings into a nice big string
@@ -179,17 +180,32 @@ def format_table(table,
     'truncate' is 0, column 0 will have a width of -16 which is not permitted.
     """
 
-    table = np.array(table)
-    num_cols = table.shape[1]
+    if not isinstance(align, list):
+        align = [align]
+
+    if not isinstance(format, list):
+        format = [format]
+
+    if not isinstance(format[0], list):
+        format = [format]
+
+    num_cols = len(table[0])
+    if len(set([len(row) for row in table]))>1:
+        raise ValueError("All rows must have the same number of columns")
+
+    for i, row in enumerate(table):
+        colformat = format[min(i,len(format)-1)]
+        for j, cell in enumerate(row):
+            f = colformat[min(j,len(colformat)-1)]
+            row[j] = f(cell)
 
     if colwidth==None:
-        colwidth = list(np.max(np.array([[len(a) for a in b] for b in
-                                         table]),0))
+        cellwidth = [[len(cell) for cell in row] for row in table]
+        colwidth = list(map(max, zip(*cellwidth)))
+
     elif not isinstance(colwidth, (list, np.ndarray)):
         colwidth = [colwidth]
 
-    if not isinstance(align, list):
-        align = [align]
 
     colwidth.extend([colwidth[-1]]*(num_cols-len(colwidth)))
 
@@ -211,11 +227,13 @@ def format_table(table,
     s = ''
     for i, row in enumerate(table):
         colalign = align[min(i,len(align)-1)]
+        colformat = format[min(i,len(format)-1)]
         for j, col in enumerate(row):
             a = colalign[min(j,len(colalign)-1)]
+            f = colformat[min(j,len(colformat)-1)]
             w = colwidth[j]
             if j!=0: s+= ' '*spacing
-            s += fit_text(str(col), w, a, suffix)
+            s += fit_text(format_time(col), w, a, suffix)
         s += "\n"
 
     return s
