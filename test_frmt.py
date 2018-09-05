@@ -16,7 +16,7 @@ def test_fit_text():
     assert fit_text('abcdef', 5, suffix='!', align='>') == 'abcd!'
 
 def test_fit_text_terminal_width():
-    width = shutil.get_terminal_size().columns
+    width = get_terminal_size().columns
     assert fit_text('a'*width)     == 'a'*width
     assert fit_text('a'*(width+1)) == 'a'*(width-3)+'...'
 
