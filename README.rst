@@ -8,7 +8,7 @@ frmt
     :target: https://coveralls.io/github/sigvaldm/frmt?branch=master
 
 .. image:: https://img.shields.io/pypi/pyversions/frmt.svg
-    :alt: PyPI - Python Version
+    :target: https://pypi.org/project/Frmt
 
 Lightweight formatting of tables and times in Python.
 
