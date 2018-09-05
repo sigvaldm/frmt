@@ -1,6 +1,10 @@
 from frmt import *
 import pytest
-import shutil
+
+try:
+    from shutil import get_terminal_size
+except ImportError:
+    from backports.shutil_get_terminal_size import get_terminal_size
 
 def test_fit_text():
     assert fit_text('abc', 5)      == 'abc  '

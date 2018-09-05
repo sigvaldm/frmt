@@ -18,7 +18,6 @@ along with frmt.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import math
-import shutil
 from copy import deepcopy
 
 try:
