@@ -32,6 +32,7 @@ setup(name='frmt',
       author_email='marholm@marebakken.com',
       url='https://github.com/sigvaldm/frmt.git',
       py_modules=['frmt'],
+      install_requires=['backports.shutil_get_terminal_size;python_version<"3.4"'],
       license='LGPL'
      )
 

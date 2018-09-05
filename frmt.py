@@ -21,6 +21,11 @@ import math
 import shutil
 from copy import deepcopy
 
+try:
+    from shutil import get_terminal_size
+except ImportError:
+    from backports.shutil_get_terminal_size import get_terminal_size
+
 def fit_text(text, width=None, align='<', suffix="..."):
     """
     Fits a piece of text to ``width`` characters by truncating too long text and
@@ -34,7 +39,7 @@ def fit_text(text, width=None, align='<', suffix="..."):
     """
 
     if width==None:
-        width = shutil.get_terminal_size().columns
+        width = get_terminal_size().columns
 
     if len(text)>width:
         if len(suffix)>width:
@@ -212,7 +217,7 @@ def format_table(table,
     colwidth.extend([colwidth[-1]]*(num_cols-len(colwidth)))
 
     if maxwidth==None:
-        maxwidth = shutil.get_terminal_size().columns-1
+        maxwidth = get_terminal_size().columns-1
 
     width = sum(colwidth)+spacing*(num_cols-1)
     if width>maxwidth:
