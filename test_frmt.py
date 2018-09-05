@@ -193,4 +193,5 @@ def test_format_table_inputonlyargument():
 def test_format_table_auto_width():
     width = get_terminal_size().columns-1
     table = [['a'*(width+1)]]
-    assert format_table(table, suffix='') == 'a'*width+'\n'
+    if width>0:
+        assert format_table(table, suffix='') == 'a'*width+'\n'
