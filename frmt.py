@@ -20,6 +20,7 @@ along with frmt.  If not, see <http://www.gnu.org/licenses/>.
 import math
 import numpy as np
 import shutil
+from copy import deepcopy
 
 def fit_text(text, width=None, align='<', suffix="..."):
     """
@@ -179,6 +180,8 @@ def format_table(table,
     much, so a width of 26 will be removed from the truncated column. If
     'truncate' is 0, column 0 will have a width of -16 which is not permitted.
     """
+
+    table = deepcopy(table)
 
     if not isinstance(align, list):
         align = [align]
