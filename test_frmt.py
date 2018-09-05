@@ -189,3 +189,8 @@ def test_format_table_inputonlyargument():
     table = [[1,2],[3,4]]
     format_table(table, format=format_time, maxwidth=80)
     assert table[1][1]==4
+
+def test_format_table_auto_width():
+    width = get_terminal_size().columns-1
+    table = [['a'*(width+1)]]
+    assert format_table(table, suffix='') == 'a'*width+'\n'
