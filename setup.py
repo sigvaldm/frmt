@@ -33,6 +33,17 @@ setup(name='frmt',
       url='https://github.com/sigvaldm/frmt.git',
       py_modules=['frmt'],
       install_requires=['backports.shutil_get_terminal_size;python_version<"3.4"'],
-      license='LGPL'
+      license='LGPL',
+      classifiers=[
+        'Intended Audience :: Developers',
+        'Intended Audience :: Information Technology',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Topic :: Software Development :: Libraries',
+        ]
      )
 
