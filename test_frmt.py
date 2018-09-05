@@ -19,7 +19,7 @@ def test_fit_text_terminal_width():
     width = get_terminal_size().columns
     assert fit_text('a'*width)     == 'a'*width
     # Terminal is zero-width on Python 2 on CI
-    assert fit_text('a'*(width+1)) == 'a'*(width-3)+'.'*max(3,width)
+    assert fit_text('a'*(width+1)) == 'a'*(width-3)+'.'*min(3,width)
 
 def test_format_time_special():
     assert format_time('text')       == 'text'
