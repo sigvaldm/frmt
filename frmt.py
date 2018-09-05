@@ -18,7 +18,6 @@ along with frmt.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import math
-import numpy as np
 import shutil
 from copy import deepcopy
 
@@ -206,7 +205,7 @@ def format_table(table,
         cellwidth = [[len(cell) for cell in row] for row in table]
         colwidth = list(map(max, zip(*cellwidth)))
 
-    elif not isinstance(colwidth, (list, np.ndarray)):
+    elif not isinstance(colwidth, list):
         colwidth = [colwidth]
 
 
@@ -215,7 +214,7 @@ def format_table(table,
     if maxwidth==None:
         maxwidth = shutil.get_terminal_size().columns-1
 
-    width = np.sum(colwidth)+spacing*(num_cols-1)
+    width = sum(colwidth)+spacing*(num_cols-1)
     if width>maxwidth:
         colwidth[truncate] -= (width-maxwidth)
 
