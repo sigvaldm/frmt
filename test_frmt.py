@@ -18,7 +18,8 @@ def test_fit_text():
 def test_fit_text_terminal_width():
     width = get_terminal_size().columns
     assert fit_text('a'*width)     == 'a'*width
-    assert fit_text('a'*(width+1)) == 'a'*(width-3)+'...'
+    # Terminal is zero-width on Python 2 on CI
+    assert fit_text('a'*(width+1)) == 'a'*(width-3)+'.'*max(3,width)
 
 def test_format_time_special():
     assert format_time('text')       == 'text'
@@ -80,13 +81,13 @@ def test_format_table_example1():
              ['Jane'  , 'C'   , 'A'      , 'A'      , 'Quite good'       ],
              ['Trevor', 'B'   , 'D'      , 'C'      , 'Somewhat average' ]]
 
-    assert format_table(table) == \
+    assert format_table(table, maxwidth=80) == \
         "        Math  English  History  Comment          \n"\
         "Bob     A     B        F        Failed at history\n"\
         "Jane    C     A        A        Quite good       \n"\
         "Trevor  B     D        C        Somewhat average \n"
 
-    assert format_table(table, ['^','<^^^<']) == \
+    assert format_table(table, ['^','<^^^<'], maxwidth=80) == \
         "        Math  English  History       Comment     \n"\
         "Bob      A       B        F     Failed at history\n"\
         "Jane     C       A        A     Quite good       \n"\
@@ -98,7 +99,7 @@ def test_format_table_example1():
         "Jane     C       A        A     Quite good     \n"\
         "Trevor   B       D        C     Somewhat ave...\n"
 
-    assert format_table(table, colwidth=10) == \
+    assert format_table(table, maxwidth=80, colwidth=10) == \
         "            Math        English     History     Comment   \n"\
         "Bob         A           B           F           Failed ...\n"\
         "Jane        C           A           A           Quite good\n"\
@@ -121,7 +122,7 @@ def test_format_table_example2a():
         row[1] = format_time(row[1])
     table.insert(0, header)
 
-    assert format_table(table, '<>') == \
+    assert format_table(table, '<>', maxwidth=80) == \
         "Name       Time\n"\
         "Eduard    43:12\n"\
         "Martha    47:59\n"\
@@ -139,7 +140,7 @@ def test_format_table_example2b():
     table.sort(key=lambda row: row[1])
     table.insert(0, header)
 
-    assert format_table(table, '<>', format=format_time) == \
+    assert format_table(table, '<>', format=format_time, maxwidth=80) == \
         "Name       Time\n"\
         "Eduard    43:12\n"\
         "Martha    47:59\n"\
@@ -168,7 +169,7 @@ def test_format_table_example2c():
         else:
             return num
 
-    assert format_table(table, '<<>', format=[index,format_time]) == \
+    assert format_table(table, '<<>', format=[index,format_time], maxwidth=80) == \
         "    Name       Time\n"\
         "1.  Eduard    43:12\n"\
         "2.  Martha    47:59\n"\
@@ -179,12 +180,12 @@ def test_format_table_numcols():
 
     table = [[1, 2, 3],[1, 2]]
     with pytest.raises(ValueError) as e_info:
-        format_table(table)
+        format_table(table, maxwidth=80)
 
 def test_format_table_inputonlyargument():
 
     # Make sure format_table isn't changing its input arguments.
     # TBD: This test could perhaps be generalized to something.
     table = [[1,2],[3,4]]
-    format_table(table, format=format_time)
+    format_table(table, format=format_time, maxwidth=80)
     assert table[1][1]==4

@@ -109,7 +109,7 @@ def format_time(seconds, mode='auto'):
             return "{:.0f}s".format(seconds)
 
     else:
-        seconds = round(seconds)
+        seconds = int(round(seconds))
         if abs(seconds)<60:
             return "{:d}".format(seconds)
         else:
