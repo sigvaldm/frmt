@@ -203,7 +203,14 @@ def format_table(table,
         colformat = format[min(i,len(format)-1)]
         for j, cell in enumerate(row):
             f = colformat[min(j,len(colformat)-1)]
-            row[j] = f(cell)
+            if isinstance(f, str):
+                fun = lambda x: f.format(x)
+            else:
+                fun = f
+            try:
+                row[j] = fun(cell)
+            except:
+                row[j] = str(cell)
 
     if colwidth==None:
         cellwidth = [[len(cell) for cell in row] for row in table]
