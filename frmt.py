@@ -135,7 +135,7 @@ def format_table(table,
                  spacing=2,
                  truncate=0,
                  suffix="...",
-                 format=str
+                 format='{:.3g}'
                 ):
     """
     Formats a table represented as a 2D array of strings into a nice big string
@@ -250,3 +250,9 @@ def format_table(table,
         s += "\n"
 
     return s
+
+def print_table(*args, **kwargs):
+    print(format_table(*args, **kwargs))
+
+def print_time(*args, **kwargs):
+    print(format_time(*args, **kwargs))
