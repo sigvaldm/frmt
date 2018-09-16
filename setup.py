@@ -25,8 +25,8 @@ with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='frmt',
-      version='1.1.0',
-      description='Lightweight formatting of tables and times in Python',
+      version='2.0.0',
+      description='Lightweight formatting (pretty-printing) of tables and times in Python',
       long_description=long_description,
       author='Sigvald Marholm',
       author_email='marholm@marebakken.com',

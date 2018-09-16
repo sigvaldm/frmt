@@ -25,7 +25,7 @@ try:
 except ImportError:
     from backports.shutil_get_terminal_size import get_terminal_size
 
-def fit_text(text, width=None, align='<', suffix="..."):
+def format_fit(text, width=None, align='<', suffix="..."):
     """
     Fits a piece of text to ``width`` characters by truncating too long text and
     padding too short text with spaces. Defaults to terminal width. Truncation
@@ -130,12 +130,12 @@ def format_time(seconds, mode='auto'):
 
 def format_table(table,
                  align='<',
+                 format='{:.3g}',
                  colwidth=None,
                  maxwidth=None,
                  spacing=2,
                  truncate=0,
-                 suffix="...",
-                 format='{:.3g}'
+                 suffix="..."
                 ):
     """
     Formats a table represented as a 2D array of strings into a nice big string
@@ -184,7 +184,7 @@ def format_table(table,
     'truncate' is 0, column 0 will have a width of -16 which is not permitted.
     """
 
-    table = deepcopy(table)
+    table = list(deepcopy(table))
 
     if not isinstance(align, list):
         align = [align]
@@ -199,18 +199,19 @@ def format_table(table,
     if len(set([len(row) for row in table]))>1:
         raise ValueError("All rows must have the same number of columns")
 
-    for i, row in enumerate(table):
+    for i in range(len(table)):
+        table[i] = list(table[i])
         colformat = format[min(i,len(format)-1)]
-        for j, cell in enumerate(row):
+        for j, cell in enumerate(table[i]):
             f = colformat[min(j,len(colformat)-1)]
             if isinstance(f, str):
                 fun = lambda x: f.format(x)
             else:
                 fun = f
             try:
-                row[j] = fun(cell)
+                table[i][j] = fun(cell)
             except:
-                row[j] = str(cell)
+                table[i][j] = str(cell)
 
     if colwidth==None:
         cellwidth = [[len(cell) for cell in row] for row in table]
@@ -239,6 +240,7 @@ def format_table(table,
 
     s = ''
     for i, row in enumerate(table):
+        if i != 0: s += "\n"
         colalign = align[min(i,len(align)-1)]
         colformat = format[min(i,len(format)-1)]
         for j, col in enumerate(row):
@@ -246,8 +248,7 @@ def format_table(table,
             f = colformat[min(j,len(colformat)-1)]
             w = colwidth[j]
             if j!=0: s+= ' '*spacing
-            s += fit_text(format_time(col), w, a, suffix)
-        s += "\n"
+            s += format_fit(format_time(col), w, a, suffix)
 
     return s
 
@@ -256,3 +257,6 @@ def print_table(*args, **kwargs):
 
 def print_time(*args, **kwargs):
     print(format_time(*args, **kwargs))
+
+def print_fit(*args, **kwargs):
+    print(format_fit(*args, **kwargs))
