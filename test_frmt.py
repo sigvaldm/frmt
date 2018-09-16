@@ -1,3 +1,22 @@
+"""
+Copyright 2018 Sigvald Marholm <marholm@marebakken.com>
+
+This file is part of frmt.
+
+frmt is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+frmt is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with frmt.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from frmt import *
 import pytest
 
@@ -6,20 +25,20 @@ try:
 except ImportError:
     from backports.shutil_get_terminal_size import get_terminal_size
 
-def test_fit_text():
-    assert fit_text('abc', 5)      == 'abc  '
-    assert fit_text('abc', 5, '<') == 'abc  '
-    assert fit_text('abc', 5, '^') == ' abc '
-    assert fit_text('abc', 5, '>') == '  abc'
-    assert fit_text('abc', 2)      == '..'
-    assert fit_text('abcdef', 5)   == 'ab...'
-    assert fit_text('abcdef', 5, suffix='!', align='>') == 'abcd!'
+def test_format_fit():
+    assert format_fit('abc', 5)      == 'abc  '
+    assert format_fit('abc', 5, '<') == 'abc  '
+    assert format_fit('abc', 5, '^') == ' abc '
+    assert format_fit('abc', 5, '>') == '  abc'
+    assert format_fit('abc', 2)      == '..'
+    assert format_fit('abcdef', 5)   == 'ab...'
+    assert format_fit('abcdef', 5, suffix='!', align='>') == 'abcd!'
 
-def test_fit_text_terminal_width():
+def test_format_fit_terminal_width():
     width = get_terminal_size().columns
-    assert fit_text('a'*width)     == 'a'*width
+    assert format_fit('a'*width)     == 'a'*width
     # Terminal is zero-width on Python 2 on CI
-    assert fit_text('a'*(width+1)) == 'a'*(width-3)+'.'*min(3,width)
+    assert format_fit('a'*(width+1)) == 'a'*(width-3)+'.'*min(3,width)
 
 def test_format_time_special():
     assert format_time('text')       == 'text'
@@ -85,25 +104,25 @@ def test_format_table_example1():
         "        Math  English  History  Comment          \n"\
         "Bob     A     B        F        Failed at history\n"\
         "Jane    C     A        A        Quite good       \n"\
-        "Trevor  B     D        C        Somewhat average \n"
+        "Trevor  B     D        C        Somewhat average "
 
     assert format_table(table, ['^','<^^^<'], maxwidth=80) == \
         "        Math  English  History       Comment     \n"\
         "Bob      A       B        F     Failed at history\n"\
         "Jane     C       A        A     Quite good       \n"\
-        "Trevor   B       D        C     Somewhat average \n"
+        "Trevor   B       D        C     Somewhat average "
 
     assert format_table(table, ['^','<^^^<'], maxwidth=47, truncate=4) == \
         "        Math  English  History      Comment    \n"\
         "Bob      A       B        F     Failed at hi...\n"\
         "Jane     C       A        A     Quite good     \n"\
-        "Trevor   B       D        C     Somewhat ave...\n"
+        "Trevor   B       D        C     Somewhat ave..."
 
     assert format_table(table, maxwidth=80, colwidth=10) == \
         "            Math        English     History     Comment   \n"\
         "Bob         A           B           F           Failed ...\n"\
         "Jane        C           A           A           Quite good\n"\
-        "Trevor      B           D           C           Somewha...\n"
+        "Trevor      B           D           C           Somewha..."
 
     with pytest.raises(RuntimeError) as e_info:
         # Column 0 is 6 characters. Native width is 49. 42 is 7 too narrow.
@@ -127,7 +146,7 @@ def test_format_table_example2a():
         "Eduard    43:12\n"\
         "Martha    47:59\n"\
         "Stuart    48:54\n"\
-        "John    1:01:12\n"
+        "John    1:01:12"
 
 def test_format_table_example2b():
 
@@ -145,36 +164,26 @@ def test_format_table_example2b():
         "Eduard    43:12\n"\
         "Martha    47:59\n"\
         "Stuart    48:54\n"\
-        "John    1:01:12\n"
+        "John    1:01:12"
 
-def test_format_table_example2c():
-
-    header =  ['Name'  , 'Time']
-    table  = [['John'  , 3672  ],
-              ['Martha', 2879  ],
-              ['Stuart', 2934  ],
-              ['Eduard', 2592  ]]
-
-    table.sort(key=lambda row: row[1])
-
-    header.insert(0, '')
-    for i, row in enumerate(table):
-        row.insert(0, i+1)
-
-    table.insert(0, header)
-
-    def index(num):
-        if isinstance(num, int):
-            return "{}.".format(num)
-        else:
-            return num
-
-    assert format_table(table, '<<>', format=[index,format_time], maxwidth=80) == \
-        "    Name       Time\n"\
-        "1.  Eduard    43:12\n"\
-        "2.  Martha    47:59\n"\
-        "3.  Stuart    48:54\n"\
-        "4.  John    1:01:12\n"
+def test_format_table_example3():
+    table = \
+        [['a', 'b', 'c', 'd', '%'],
+         [17.2198804555926,
+          15.143854752058406,
+          29.24066103281906,
+          29.99010896298264,
+          0.02078852708040979],
+         [9.381666911448356,
+          29.36822846449368,
+          9.053677658435248,
+          0.9823747478441014,
+          0.33476190849779475],
+         [7.628112421818297,
+          17.995011240828724,
+          29.82956064972065,
+          24.851495494902068,
+          0.8006807736678987]]
 
 def test_format_table_numcols():
 
@@ -194,4 +203,12 @@ def test_format_table_auto_width():
     width = get_terminal_size().columns-1
     table = [['a'*(width+1)]]
     if width>0:
-        assert format_table(table, suffix='') == 'a'*width+'\n'
+        assert format_table(table, suffix='') == 'a'*width
+
+def test_print_fit(capsys):
+    print(format_fit('abc', 5, '>'))
+    a = capsys.readouterr().out
+    print_fit('abc', 5, '>')
+    b = capsys.readouterr().out
+    assert a==b
+
