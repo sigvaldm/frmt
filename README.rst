@@ -108,7 +108,7 @@ The ``format`` parameter can be used to format the cell contents. By default the
 ``format`` also accepts a function as an input to allow for greater flexibility. As an example, consider formatting the grades as letters::
 
     >>> def letter_grade(x):
-    ...     return 'ABCDEF'[round(x)-1]
+    ...     return 'ABCDEF'[int(round(x))-1]
 
     >>> print_table(grades, format=letter_grade)
             Math  English  History  Comment          
