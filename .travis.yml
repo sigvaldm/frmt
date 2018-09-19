@@ -9,7 +9,11 @@ before_install:
 - pip install pytest pytest-cov
 - pip install coveralls
 script:
+- stty size
 - stty cols 80
+- stty size
 - pytest
 after_success:
 - coveralls
+env:
+- COLUMNS=80
