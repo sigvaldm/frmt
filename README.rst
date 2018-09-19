@@ -38,6 +38,7 @@ Or download the GitHub repository https://github.com/sigvaldm/frmt.git and run::
 ``*_table()``
 -------------
 Signature::
+
     *_table(table,
             align='<',
             format='{:.3g}',
@@ -46,8 +47,8 @@ Signature::
             spacing=2,
             truncate=0,
             suffix="..."
-           ):
-    
+           )   
+
 The ``*_table()`` functions formats a table represented as a list of lists. Consider this example using a table of grades from 1.0 (best) to 6.0 (worst)::
 
     >>> from frmt import print_table
