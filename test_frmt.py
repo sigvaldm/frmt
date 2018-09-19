@@ -41,9 +41,15 @@ def test_format_fit_terminal_width():
     assert format_fit('a'*(width+1)) == 'a'*(width-3)+'.'*min(3,width)
 
 def test_format_time_special():
-    assert format_time('text')       == 'text'
-    assert format_time(float('nan')) == '-'
-    assert format_time(0)            == '0'
+    assert format_time('text')             == 'text'
+    assert format_time_large('text')       == 'text'
+    assert format_time_small('text')       == 'text'
+    assert format_time(float('nan'))       == '-'
+    assert format_time_large(float('nan')) == '-'
+    assert format_time_small(float('nan')) == '-'
+    assert format_time(0)                  == '0'
+    assert format_time_large(0)            == '0'
+    assert format_time_small(0)            == '0'
 
 def test_format_time_lower_limits():
     assert format_time(4e-10)  == '0'
@@ -75,11 +81,11 @@ def test_format_time_rounding():
     assert format_time(-1.0050001) == '-1.01s'
 
 def test_format_time_mode():
-    assert format_time(60,'small')  == '60.0s'
-    assert format_time(99,'small')  == '99.0s'
-    assert format_time(100,'small') == '100s'
-    assert format_time(0.1,'large') == '0'
-    assert format_time(10,'large')  == '10'
+    assert format_time_small(60)  == '60.0s'
+    assert format_time_small(99)  == '99.0s'
+    assert format_time_small(100) == '100s'
+    assert format_time_large(0.1) == '0'
+    assert format_time_large(10)  == '10'
 
 # def test_format_num():
 #     assert format_num('text')     == 'text'

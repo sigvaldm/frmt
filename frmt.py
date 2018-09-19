@@ -48,7 +48,7 @@ def format_fit(text, width=None, align='<', suffix="..."):
     else:
         return "{{:{}{{w}}}}".format(align).format(text,w=width)
 
-def format_time(seconds, mode='auto'):
+def format_time(seconds):
     """
     Formats a string from time given in seconds. For large times
     (``abs(seconds) >= 60``) the format is::
@@ -57,14 +57,7 @@ def format_time(seconds, mode='auto'):
 
     For small times (``abs(seconds) < 60``), the result is given in 3
     significant figures, with units given in seconds and a suitable SI-prefix.
-    The format can be locked to either 'small' or 'large' using the 'mode'
-    argument.
-
-    The finest resolution is 1ns and ``nan`` returns ``-``.
     """
-
-    assert mode in ['auto','small','large'],\
-            "mode must be 'auto', 'small' or 'large'"
 
     if not isinstance(seconds, (int, float)):
         return str(seconds)
@@ -72,61 +65,80 @@ def format_time(seconds, mode='auto'):
     if math.isnan(seconds):
         return "-"
 
-    if mode=='auto':
-        if abs(seconds)<60:
-            mode='small'
-        else:
-            mode='large'
-
-    if mode=='small':
-        if abs(seconds)<1:
-            milliseconds = 1000*seconds
-            if abs(milliseconds)<1:
-                microseconds = 1000*milliseconds
-                if abs(microseconds)<1:
-                    nanoseconds = 1000*microseconds
-                    if abs(nanoseconds)<0.5:
-                        return "0"
-                    else:
-                        return "{:.0f}ns".format(nanoseconds)
-                elif abs(microseconds)<10:
-                    return "{:.2f}us".format(microseconds)
-                elif abs(microseconds)<100:
-                    return "{:.1f}us".format(microseconds)
-                else:
-                    return "{:.0f}us".format(microseconds)
-            elif abs(milliseconds)<10:
-                return "{:.2f}ms".format(milliseconds)
-            elif abs(milliseconds)<100:
-                return "{:.1f}ms".format(milliseconds)
-            else:
-                return "{:.0f}ms".format(milliseconds)
-        elif abs(seconds)<10:
-                return "{:.2f}s".format(seconds)
-        elif abs(seconds)<100:
-            return "{:.1f}s".format(seconds)
-        else:
-            return "{:.0f}s".format(seconds)
-
+    if abs(seconds)<60:
+        return format_time_small(seconds)
     else:
-        seconds = int(round(seconds))
-        if abs(seconds)<60:
-            return "{:d}".format(seconds)
-        else:
-            minutes = int(seconds/60)
-            seconds %= 60
-            if abs(minutes)<60:
-                return "{:d}:{:02d}".format(minutes,seconds)
-            else:
-                hours = int(minutes/60)
-                minutes %= 60
-                if abs(hours)<24:
-                    return "{:d}:{:02d}:{:02d}".format(hours,minutes,seconds)
+        return format_time_large(seconds)
+
+def format_time_small(seconds):
+    """
+    Same as format_time() but always uses SI-prefix and 3 significant figures.
+    """
+
+    if not isinstance(seconds, (int, float)):
+        return str(seconds)
+
+    if math.isnan(seconds):
+        return "-"
+
+    if abs(seconds)<1:
+        milliseconds = 1000*seconds
+        if abs(milliseconds)<1:
+            microseconds = 1000*milliseconds
+            if abs(microseconds)<1:
+                nanoseconds = 1000*microseconds
+                if abs(nanoseconds)<0.5:
+                    return "0"
                 else:
-                    days = int(hours/24)
-                    hours %= 24
-                    return "{:d}:{:02d}:{:02d}:{:02d}".format(
-                        days,hours,minutes,seconds)
+                    return "{:.0f}ns".format(nanoseconds)
+            elif abs(microseconds)<10:
+                return "{:.2f}us".format(microseconds)
+            elif abs(microseconds)<100:
+                return "{:.1f}us".format(microseconds)
+            else:
+                return "{:.0f}us".format(microseconds)
+        elif abs(milliseconds)<10:
+            return "{:.2f}ms".format(milliseconds)
+        elif abs(milliseconds)<100:
+            return "{:.1f}ms".format(milliseconds)
+        else:
+            return "{:.0f}ms".format(milliseconds)
+    elif abs(seconds)<10:
+            return "{:.2f}s".format(seconds)
+    elif abs(seconds)<100:
+        return "{:.1f}s".format(seconds)
+    else:
+        return "{:.0f}s".format(seconds)
+
+def format_time_large(seconds):
+    """
+    Same as format_time() but always uses the format dd:hh:mm:ss.
+    """
+
+    if not isinstance(seconds, (int, float)):
+        return str(seconds)
+
+    if math.isnan(seconds):
+        return "-"
+
+    seconds = int(round(seconds))
+    if abs(seconds)<60:
+        return "{:d}".format(seconds)
+    else:
+        minutes = int(seconds/60)
+        seconds %= 60
+        if abs(minutes)<60:
+            return "{:d}:{:02d}".format(minutes,seconds)
+        else:
+            hours = int(minutes/60)
+            minutes %= 60
+            if abs(hours)<24:
+                return "{:d}:{:02d}:{:02d}".format(hours,minutes,seconds)
+            else:
+                days = int(hours/24)
+                hours %= 24
+                return "{:d}:{:02d}:{:02d}:{:02d}".format(
+                    days,hours,minutes,seconds)
 
 def format_table(table,
                  align='<',
@@ -138,7 +150,7 @@ def format_table(table,
                  suffix="..."
                 ):
     """
-    Formats a table represented as a 2D array of strings into a nice big string
+    Formats a table represented as an iterable of iterable into a nice big string
     suitable for printing.
 
     Parameters:
@@ -157,7 +169,19 @@ def format_table(table,
             If it's a list of strings, each string specifies the alignment of
             one row. The last string is used repeatedly for unspecified rows.
 
-    colwidth : list of int or None
+    format : string/function, or (nested) list of string/function
+
+             Formats the contents of the cells using the specified function(s)
+             or format string(s).
+
+             If it's a list of strings/functions each entry specifies formatting
+             for one column, the last entry being used repeatedly for
+             unspecified columns.
+
+             If it's a list of lists, each sub-list specifies one row, the last
+             sub-list being used repeatedly for unspecified rows.
+
+    colwidth : int, list of ints or None
 
                The width of each column. The last width is used repeatedly for
                unspecified columns. If ``None`` the width is fitted to the
@@ -257,6 +281,12 @@ def print_table(*args, **kwargs):
 
 def print_time(*args, **kwargs):
     print(format_time(*args, **kwargs))
+
+def print_time_large(*args, **kwargs):
+    print(format_time_large(*args, **kwargs))
+
+def print_time_small(*args, **kwargs):
+    print(format_time_small(*args, **kwargs))
 
 def print_fit(*args, **kwargs):
     print(format_fit(*args, **kwargs))
