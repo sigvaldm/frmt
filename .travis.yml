@@ -9,6 +9,7 @@ before_install:
 - pip install pytest pytest-cov
 - pip install coveralls
 script:
+- stty cols 80
 - pytest
 after_success:
 - coveralls
