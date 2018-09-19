@@ -14,11 +14,15 @@ frmt is a pretty-printing library for tables and times. The core philosophy is t
 
 The library consist of the following functions:
 
-* ``format_table()``/``print_table()``
-* ``format_time()``/``print_time()``
-* ``format_fit()``/``print_fit()``
+=======================  ======================  ==========================================================================================
+``format_table()``       ``print_table()``       Format a list of lists as a table.
+``format_time_large()``  ``print_time_large()``  Format seconds to ``dd:hh:mm:ss``.
+``format_time_small()``  ``print_time_small()``  Format seconds using SI-prefix and 3 significant figures, e.g. ``3.45ms``.
+``format_time()``        ``print_time()``        Same as ``*_time_small()`` for less than 60 seconds, same as ``*_time_large()`` otherwise.
+``format_fit()``         ``print_fit()``         Fit and align text within a width.
+=======================  ======================  ==========================================================================================
 
-The ``format_*()`` functions formats a certain type of data to a nice string and returns it. The ``print_*()``-functions are simple wrappers that act identically except that they print the string directly to the output. Each are described in what follows.
+The ``format_*()`` functions returns a formatted string, whereas the ``print_*()`` functions are simple wrappers around the ``format_*()`` functions that prints the return string.
 
 Installation
 ------------
@@ -31,8 +35,19 @@ Or download the GitHub repository https://github.com/sigvaldm/frmt.git and run::
     python setup.py install
 
 
-``format_table()``/``print_table()``
-------------------------------------
+``*_table()``
+-------------
+Signature::
+    *_table(table,
+            align='<',
+            format='{:.3g}',
+            colwidth=None,
+            maxwidth=None,
+            spacing=2,
+            truncate=0,
+            suffix="..."
+           ):
+    
 The ``*_table()`` functions formats a table represented as a list of lists. Consider this example using a table of grades from 1.0 (best) to 6.0 (worst)::
 
     >>> from frmt import print_table
@@ -48,18 +63,6 @@ The ``*_table()`` functions formats a table represented as a list of lists. Cons
     Trevor  2.2   4.4      3.2      Somewhat average 
 
 The functions also work with other kinds of iterables of iterables, for instance NumPy arrays. It also supports custom alignment and formatting for each individual cell.
-    
-The signature of ``*_table()`` looks as follows::
-
-    *_table(table,
-            align='<',
-            format='{:.3g}',
-            colwidth=None,
-            maxwidth=None,
-            spacing=2,
-            truncate=0,
-            suffix="..."
-           ):
     
 Alignment
 ~~~~~~~~~
@@ -252,47 +255,58 @@ A common pattern is having a set of lists (or 1D NumPy arrays) and wanting to pr
     0.009    4.505    0.207
     0.010    5.096    0.126
 
-``format_time()``
------------------
-Signature: ``format_time(seconds, mode='auto')``
+``*_time*()``
+-------------
+Signature: ``*_time*(seconds)``
 
-``format_time()`` represents time given in seconds as a convenient string. For large times (``abs(seconds) >= 60``) the output format is::
+``*_time()`` represents time given in seconds using the format ``dd:hh:mm:ss`` when ``abs(seconds) >= 60`` and using SI-prefixes and three significant figures otherwise. This gives a convenient resolution for the widest range of magnitudes. ``*_time_large()`` always uses the former format and ``*_time_small()`` always uses the latter. Rounding is taken care of. Examples::
 
-    dd:hh:mm:ss
+    >>> from frmt import print_time, print_time_small, print_time_large
 
-where ``dd``, ``hh``, ``mm`` and ``ss`` refers to days, hours, minutes and seconds, respectively. Blocks that are zero are omitted. For instance, if the time is less than one day, the part ``dd:`` is omitted, and so forth. Examples::
+    >>> print_time(24*60*60)
+    1:00:00:00
 
-    format_time(24*60*60)       returns     "1:00:00:00"
-    format_time(60*60)          returns     "1:00:00"
-    format_time(60)             returns     "1:00"
+    >>> print_time(90)
+    1:30
 
-For small times (``abs(seconds) < 60``), the result is given in 3 significant figures, with units given in seconds and a suitable SI-prefix. Examples::
+    >>> print_time(30)
+    30.0s
 
-    format_time(10)             returns     "10.0s"
-    format_time(1)              returns     "1.00s"
-    format_time(0.01255)        returns     "12.6ms"   (with correct round-off)
+    >>> print_time(0.01255)
+    12.6ms
 
-The finest resolution is 1ns. Finally::
+    >>> print_time_small(90)
+    90.0s
 
-    format_time(float('nan'))    returns     "-"
+    >>> print_time_large(30)
+    30
 
-``mode`` can be set equal to either ``'small'`` or ``'large'`` to lock the format to that of small or large times, respectively.
+    >>> print_time(float('nan'))
+    -
 
-``fit_text()``
+``*_fit()``
 --------------
-Signature: ``fit_text(text, width=None, align='<', suffix="...")``
+Signature: ``*_fit(text, width=None, align='<', suffix="...")``
 
-``fit_text()`` fits a piece of text to ``width`` characters by truncating too long text and padding too short text with spaces. Truncation is indicated by a customizable suffix ``suffix`` (default: ``'...'``). Examples::
+``*_fit()`` fits a piece of text to ``width`` characters by truncating too long text and padding too short text with spaces. Truncation is indicated by a customizable suffix ``suffix`` (default: ``'...'``). Examples::
 
-    fit_text('abcdefgh', 6)     returns     'abc...'    (truncation)
-    fit_text('abcd', 6)         returns     'abcd  '    (padding)
+    >>> from frmt import format_fit
 
-If ``width`` is not specified it is taken to be the terminal width. Hence to print a string ``s`` to terminal that truncates rather than spilling across multiple lines if it's too long::
+    >>> format_fit('abcdefgh', 6) == 'abc...' # truncation
+    True
 
-    print(fit_text(s))
+    >>> format_fit('abcdefgh', 6, suffix='!') == 'abcde!' # truncation
+    True
 
-Content alignment in case of padding can be specified using ``align`` which can take the following values:
+    >>> format_fit('abc', 6) == 'abc   ' # padding
+    True
 
-* ``<`` - Left aligned (default)
-* ``^`` - Centered
-* ``>`` - Right aligned
+The contents can be left, centered or right aligned by setting ``align`` to ``'<'``, ``'^'`` or ``'>'``, respectively::
+
+    >>> format_fit('abc', 6, '^') == ' abc  '
+    True
+
+    >>> format_fit('abc', 6, '>') == '   abc'
+    True
+
+If ``width`` is not specified it is taken to be the terminal width. Hence ``print_fit(s)`` is equivalent to ``print(s)`` except that ``s`` will be truncated such as to not spill over to the next line in the terminal.
