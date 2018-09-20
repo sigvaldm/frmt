@@ -10,7 +10,7 @@ frmt
 .. image:: https://img.shields.io/pypi/pyversions/frmt.svg
     :target: https://pypi.org/project/Frmt
 
-frmt is a pretty-printing library for tables and times. The core philosophy is that it should work with minimal hassle, yet offer flexibility through elegant, lightweight design. 
+frmt is a pretty-printing library for tables and times. The core philosophy is that it should work with minimal hassle, yet offer flexibility through elegant, lightweight design (less than 150 lines of code excluding comments).
 
 The library consist of the following functions:
 
